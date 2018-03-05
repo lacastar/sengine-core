@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<rule-execution-set>     
+    <name>RuleExecutionSet1</name>    
+    <description>Stateless RuleExecutionSet for sengine</description>     
+    <rules> 
+        <![CDATA[  
+            {"rules": [
+                    { 
+                        "name": "testRule1",
+                        "description": "test rule 1 returns true", 
+                        "code": "factParams.value = factParams.value;" 
+                    },
+                    { 
+                        "name": "testRule2", 
+                        "description": "test rule 2 returns false", 
+                        "code": "factParams.value = !factParams.value;"
+                    },
+                    { 
+                        "name":"testRule3", 
+                        "description":"test rule 3 returns 300", 
+                        "code": "factParams.numericValue =  300;"
+                    }
+                 ] 
+            }
+         ]]>
+    </rules> 
+</rule-execution-set> 
