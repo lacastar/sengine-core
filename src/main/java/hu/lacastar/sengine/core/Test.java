@@ -48,17 +48,35 @@ public class Test {
         return rules;
     }
 
-    public static void main(String... args) throws ParserConfigurationException, SAXException, IOException, RuleExecutionSetCreateException, ScriptException {
-        Engine engine = new Engine(null);
-        
-        for (Rules.Rule rule : readRules().getRules()) {
-            engine.initRule(rule);
+    /**
+     *
+     * Simple hello world test class of the engine. 
+     * 
+     * @param args Standard Java main function args, not used in this test class
+     */
+    public static void main(String... args) {
+        try {
+            Engine engine = new Engine(null);
+            
+            for (Rules.Rule rule : readRules().getRules()) {
+                engine.initRule(rule);
+            }
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("value", true);
+            parameters.put("numericValue", 0);
+            engine.executeAll(parameters);
+            Logger.getLogger(Test.class.getName()).info("value: " + parameters.get("value"));
+            Logger.getLogger(Test.class.getName()).info("numericValue: " + parameters.get("numericValue"));
+        } catch (ParserConfigurationException ex) {
+            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SAXException ex) {
+            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (RuleExecutionSetCreateException ex) {
+            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ScriptException ex) {
+            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
         }
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("value", true);
-        parameters.put("numericValue", 0);
-        engine.executeAll(parameters);
-        Logger.getLogger(Test.class.getName()).info("value: " + parameters.get("value"));
-        Logger.getLogger(Test.class.getName()).info("numericValue: " + parameters.get("numericValue"));
     }
 }

@@ -27,6 +27,9 @@ public class Rules {
         this.rules = rules;
     }
 
+    /**
+     *
+     */
     public static class Rule {
 
         private String name;

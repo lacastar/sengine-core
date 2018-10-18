@@ -16,11 +16,29 @@ import javax.rules.RuleSessionCreateException;
 import javax.rules.RuleSessionTypeUnsupportedException;
 
 /**
+ * It provides methods to create RuleSession implementation as well as methods
+ * to retrieve RuleExecutionSets that have been previously registered using the
+ * RuleAdministrator. The RuleRuntime should be accessed through the
+ * RuleServiceProvider. An instance of the RuleRuntime can be retrieved by
+ * calling RuleServiceProvider ruleServiceProvider = RuleServiceProvider.newInstance(); 
+ * RuleRuntime ruleRuntime = ruleServiceProvider.getRuleRuntime(); 
+ * Note: the release method must be called on the RuleSession to clean up all resources used by the RuleSession.
  *
  * @author Szenthe László
  */
 public class RuleRuntimeImpl implements javax.rules.RuleRuntime {
 
+    /**
+     * Creates a RuleSession implementation using the supplied vendor-specific rule execution set registration URI.
+     * @param uri  the URI for the RuleExecutionSet
+     * @param properties additional properties used to create the RuleSession implementation.
+     * @param ruleSessionType the type of rule session to create.
+     * @return The new RuleSession instance
+     * @throws RuleSessionTypeUnsupportedException  if the ruleSessionType is not supported by the vendor or the RuleExecutionSet
+     * @throws RuleSessionCreateException if an internal error prevents a RuleSession from being created
+     * @throws RuleExecutionSetNotFoundException if the URI could not be resolved into a RuleExecutionSet
+     * @throws RemoteException not used
+     */
     @Override
     public RuleSession createRuleSession(String uri, Map properties, int ruleSessionType) throws RuleSessionTypeUnsupportedException, RuleSessionCreateException, RuleExecutionSetNotFoundException, RemoteException {
 
@@ -38,6 +56,11 @@ public class RuleRuntimeImpl implements javax.rules.RuleRuntime {
         throw new RuleSessionTypeUnsupportedException(message);
     }
 
+    /**
+     * Retrieves a List of the URIs that currently have RuleExecutionSets associated with them. An empty list is returned is there are no associations.
+     * @return List of URIs
+     * @throws RemoteException a List of Strings (URIs)
+     */
     @Override
     public List getRegistrations() throws RemoteException {
         return RuleAdministratorImpl.getRegistrations();

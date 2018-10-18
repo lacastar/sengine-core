@@ -8,11 +8,9 @@ package hu.lacastar.sengine.core.rules;
 import hu.lacastar.sengine.core.admin.RuleExecutionSetImpl;
 import hu.lacastar.sengine.core.rules.engine.Fact;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.naming.OperationNotSupportedException;
 import javax.rules.Handle;
 import javax.rules.InvalidHandleException;
 import javax.rules.InvalidRuleSessionException;
@@ -21,7 +19,14 @@ import javax.rules.RuleExecutionSetMetadata;
 import javax.rules.StatefulRuleSession;
 
 /**
- *
+ *  A stateful rules engine session exposes a stateful rule execution API to an underlying rules engine. 
+ *  The session allows arbitrary objects to be added and removed to and from the rule session state. 
+ *  Additionally, objects currently part of the rule session state may be updated. 
+ *  There are inherently side-effects to adding objects to the rule session state. 
+ *  The execution of a RuleExecutionSet can add, remove and update objects in the rule session state. 
+ *  The objects in the rule session state are therefore dependent on the rules within the RuleExecutionSet as well as the rule engine vendor's specific rule engine behaviour. 
+ *  Handle instances are used by the rule engine vendor to track Objects added to the rule session state. 
+ *  This allows multiple instances of equivalent Objects to be added to the session state and identified, even after serialization. 
  * @author Szenthe László
  */
 public class StatefulRuleSessionImpl extends HandleSequenceGenerator implements StatefulRuleSession {
@@ -30,11 +35,24 @@ public class StatefulRuleSessionImpl extends HandleSequenceGenerator implements 
     final Map<String, Object> factsByName = new HashMap<>();
     final Map<Handle, String> factsByHandle = new HashMap<>();
 
+    /**
+     * Creates a session from a ruleset with the supported properties
+     * @param ruleset RuleSet in the session
+     * @param properties Properties map
+     */
     public StatefulRuleSessionImpl(RuleExecutionSetImpl ruleset, Map properties) {
         this.ruleSet = ruleset;
 
     }
 
+    /**
+     * Returns true if the given object is contained within rule session state of this rule session.
+     * 
+     * @param objectHandle the handle to the target object.
+     * @return true if the given object is contained within the rule session state of this rule session.
+     * @throws InvalidRuleSessionException on illegal rule session state.
+     * @throws InvalidHandleException on invalid handle
+     */
     @Override
     public boolean containsObject(Handle objectHandle)
             throws InvalidRuleSessionException, InvalidHandleException {
@@ -43,6 +61,14 @@ public class StatefulRuleSessionImpl extends HandleSequenceGenerator implements 
 
     }
 
+    /**
+     * Adds a given object to the rule session state of this rule session. 
+     * The argument to this method is Object because in the non-managed env. not all objects should have to implement Serializable. 
+     * If the RuleSession is Serializable and it contains non-serializable fields a runtime exception will be thrown.
+     * @param object the object to be added.
+     * @return the Handle for the newly added Object
+     * @throws InvalidRuleSessionException on illegal rule session state.
+     */
     @Override
     public Handle addObject(Object object)
             throws InvalidRuleSessionException {
@@ -57,6 +83,12 @@ public class StatefulRuleSessionImpl extends HandleSequenceGenerator implements 
         return handle;
     }
 
+    /**
+     * Adds a List of Objects to the rule session state of this rule session.
+     * @param objList the objects to be added.
+     * @return a List of Handles, one for each added Object. The List must be ordered in the same order as the input objList.
+     * @throws InvalidRuleSessionException on illegal rule session state.
+     */
     @Override
     public List addObjects(List objList)
             throws InvalidRuleSessionException {
@@ -69,6 +101,15 @@ public class StatefulRuleSessionImpl extends HandleSequenceGenerator implements 
         return al;
     }
 
+    /**
+     * Notifies the rules engine that a given object in the rule session state has changed. 
+     * The semantics of this call are equivalent to calling removeObject followed by addObject.
+     * The original Handle is rebound to the new value for the Object however.
+     * @param objectHandle the handle to the original object.
+     * @param newObject the new object to bind to the handle.
+     * @throws InvalidRuleSessionException on illegal rule session state.
+     * @throws InvalidHandleException if the input Handle is no longer valid
+     */
     @Override
     public void updateObject(Handle objectHandle, Object newObject)
             throws InvalidRuleSessionException, InvalidHandleException {
@@ -89,6 +130,12 @@ public class StatefulRuleSessionImpl extends HandleSequenceGenerator implements 
         factsByName.put(newFact.getName(), newFact.getValue());
     }
 
+    /**
+     * Removes a given object from the rule session state of this rule session.
+     * @param handleObject the handle to the object to be removed from the rule session state.
+     * @throws InvalidHandleException if the input Handle is no longer valid
+     * @throws InvalidRuleSessionException on illegal rule session state.
+     */
     @Override
     public void removeObject(Handle handleObject)
             throws InvalidHandleException, InvalidRuleSessionException {
@@ -103,6 +150,15 @@ public class StatefulRuleSessionImpl extends HandleSequenceGenerator implements 
 
     }
 
+    /**
+     * Returns a List of all objects in the rule session state of this rule session.
+     * The objects should pass the default filter test of the default RuleExecutionSet filter (if present). 
+     * This may not neccessarily include all objects added by calls to addObject, and may include Objects created by side-effects.
+     * The execution of a RuleExecutionSet can add, remove and update objects as part of the rule session state.
+     * Therefore the rule session state is dependent on the rules that are part of the executed RuleExecutionSet as well as the rule vendor's specific rule engine behaviour. 
+     * @return a List of all objects part of the rule session state.
+     * @throws InvalidRuleSessionException on illegal rule session state.
+     */
     @Override
     public List getObjects()
             throws InvalidRuleSessionException {
@@ -110,6 +166,16 @@ public class StatefulRuleSessionImpl extends HandleSequenceGenerator implements 
         return getObjects(this.ruleSet.resolveObjectFilter());
     }
 
+    /**
+     * Returns a List over the objects in rule session state of this rule session. 
+     * The objects should pass the filter test on the specified ObjectFilter. 
+     * This may not neccessarily include all objects added by calls to addObject, and may include Objects created by side-effects.
+     * The execution of a RuleExecutionSet can add, remove and update objects as part of the rule session state.
+     * Therefore the rule session state is dependent on the rules that are part of the executed RuleExecutionSet as well as the rule vendor's specific rule engine behaviour. 
+     * @param filter the object filter.
+     * @return a List of all the objects in the rule session state of this rule session based upon the given object filter.
+     * @throws InvalidRuleSessionException on illegal rule session state.
+     */
     @Override
     public List getObjects(ObjectFilter filter)
             throws InvalidRuleSessionException {
@@ -127,6 +193,11 @@ public class StatefulRuleSessionImpl extends HandleSequenceGenerator implements 
 
     }
 
+    /**
+     * Returns a List of the Handles being used for object identity.
+     * @return a List of Handles present in the currect state of the rule session.
+     * @throws InvalidRuleSessionException on illegal rule session state.
+     */
     @Override
     public List getHandles()
             throws InvalidRuleSessionException {
@@ -135,6 +206,11 @@ public class StatefulRuleSessionImpl extends HandleSequenceGenerator implements 
         return new ArrayList(factsByHandle.keySet());
     }
 
+    /**
+     * Executes the rules in the bound rule execution set using the objects present in the rule session state.
+     * This will typically modify the rule session state - and may add, remove or update Objects bound to Handles.
+     * @throws InvalidRuleSessionException on illegal rule session state.
+     */
     @Override
     public void executeRules()
             throws InvalidRuleSessionException {
@@ -142,6 +218,12 @@ public class StatefulRuleSessionImpl extends HandleSequenceGenerator implements 
         ruleSet.getEngine().executeAll(factsByName);
     }
 
+    /**
+     * Resets this rule session. 
+     * Calling this method will bring the rule session state to its initial state for this rule session and will reset any other state associated with this rule session.
+     * A reset will not reset the state on the default object filter for a RuleExecutionSet.
+     * @throws InvalidRuleSessionException on illegal rule session state.
+     */
     @Override
     public void reset()
             throws InvalidRuleSessionException {
@@ -151,6 +233,13 @@ public class StatefulRuleSessionImpl extends HandleSequenceGenerator implements 
         resetSequence();
     }
 
+    /**
+     * Returns the Object within the StatefulRuleSession associated with a Handle.
+     * @param handle the handle that identifies the object
+     * @return Returns the Object within the StatefulRuleSession associated with a Handle.
+     * @throws InvalidHandleException if the handle is not found in the session
+     * @throws InvalidRuleSessionException on illegal rule session state.
+     */
     @Override
     public Object getObject(Handle handle)
             throws InvalidHandleException, InvalidRuleSessionException {
@@ -161,7 +250,11 @@ public class StatefulRuleSessionImpl extends HandleSequenceGenerator implements 
         return factsByHandle.get(handle);
     }
 
-
+    /**
+     * Returns the meta data for the rule execution set bound to this rule session.
+     * @return Returns the meta data for the rule execution set bound to this rule session.
+     * @throws InvalidRuleSessionException on illegal rule session state.
+     */
     @Override
     public RuleExecutionSetMetadata getRuleExecutionSetMetadata()
             throws InvalidRuleSessionException {
@@ -170,6 +263,10 @@ public class StatefulRuleSessionImpl extends HandleSequenceGenerator implements 
         return new RuleExecutionSetMetadataImpl(this.ruleSet);
     }
 
+    /**
+     * Releases all resources used by this rule session. This method renders this rule session unusable until it is reacquired through the RuleRuntime.
+     * @throws InvalidRuleSessionException on illegal rule session state.
+     */
     @Override
     public void release()
             throws InvalidRuleSessionException {
@@ -179,6 +276,11 @@ public class StatefulRuleSessionImpl extends HandleSequenceGenerator implements 
         this.ruleSet = null;
     }
 
+    /**
+     * Returns the type identifier for this RuleSession. The type identifiers are defined in the RuleRuntime interface.
+     * @return 0
+     * @throws InvalidRuleSessionException on illegal rule session state.
+     */
     @Override
     public int getType()
             throws InvalidRuleSessionException {

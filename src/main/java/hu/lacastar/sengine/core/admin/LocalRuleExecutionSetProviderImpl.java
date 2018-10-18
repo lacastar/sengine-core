@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package hu.lacastar.sengine.core.admin;
 
 import com.google.gson.Gson;
@@ -10,7 +5,6 @@ import hu.lacastar.sengine.core.rules.engine.Rules;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -28,14 +22,44 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
- *
+ * A rule config parser to process and create a rule execution set. 
+ * Input stream is supposed to contain a document like 'jsr94-test.xml': a root node called rule-execution-set that contains
+ * a  name,  description and rules element. Name is the name and description is the description of the rule
+ * execution set respectively. Rules contains the rules as JavaScript in the following form:  {"rules": [
+                    { 
+                        "name": "testRule1",
+                        "description": "test rule 1 returns true", 
+                        "code": "factParams.value = factParams.value;" 
+                    },
+             ...
+ * 
  * @author Szenthe László
  */
 public class LocalRuleExecutionSetProviderImpl implements LocalRuleExecutionSetProvider {
 
+    /**
+     *  Name element constant.
+     */
     public static final String NAME = "name";
+
+    /**
+     * Description element constant.
+     */
     public static final String DESCRIPTION = "description";
 
+    /**
+     * Rules element constant.
+     */
+    public static final String RULES = "rules";
+    
+    /**
+     * Create a RuleExecutionSet from the provided inputStream.
+     * @param inputStream The stream that contains the configuration document.
+     * @param props Properties provided for the rule engine.
+     * @return The processed rule execution set.
+     * @throws RuleExecutionSetCreateException Business or configuration error encountered during creation.
+     * @throws IOException Error during reading the inputstream.
+     */
     @Override
     public RuleExecutionSet createRuleExecutionSet(InputStream inputStream, Map props)
             throws RuleExecutionSetCreateException, IOException {
@@ -50,6 +74,14 @@ public class LocalRuleExecutionSetProviderImpl implements LocalRuleExecutionSetP
         return createRuleExecutionSet(doc.getDocumentElement(), props);
     }
 
+    /**
+     * Create a RuleExecutionSet from the provided Reader.
+     * @param reader The reader that contains the configuration document.
+     * @param props Properties provided for the rule engine.
+     * @return The procecessed rule execution set.
+     * @throws RuleExecutionSetCreateException Business or configuration error encountered during creation.
+     * @throws IOException Error during reading.
+     */
     @Override
     public RuleExecutionSet createRuleExecutionSet(Reader reader, Map props)
             throws RuleExecutionSetCreateException, IOException {
@@ -66,21 +98,21 @@ public class LocalRuleExecutionSetProviderImpl implements LocalRuleExecutionSetP
 
     RuleExecutionSet createRuleExecutionSet(Element docElement, Map<String, String> properties)
             throws RuleExecutionSetCreateException {
-        NodeList contents = docElement.getElementsByTagName("name");
+        NodeList contents = docElement.getElementsByTagName(NAME);
         if (contents.getLength() == 0) {
             throw new RuleExecutionSetCreateException("Name not specified");
         }
         //String name = contents.item(0).getFirstChild().getNodeValue().trim();
         String name = contents.item(0).getTextContent().trim();
 
-        contents = docElement.getElementsByTagName("description");
+        contents = docElement.getElementsByTagName(DESCRIPTION);
         if (contents.getLength() == 0) {
             throw new RuleExecutionSetCreateException("Description not specified");
         }
         //String description = contents.item(0).getFirstChild().getNodeValue().trim();
         String description = contents.item(0).getTextContent().trim();
 
-        contents = docElement.getElementsByTagName("rules");
+        contents = docElement.getElementsByTagName(RULES);
         if (contents.getLength() == 0) {
             throw new RuleExecutionSetCreateException("Code not specified");
         }
@@ -88,8 +120,8 @@ public class LocalRuleExecutionSetProviderImpl implements LocalRuleExecutionSetP
         if (properties == null) {
             properties = new HashMap();
         }
-        properties.put("name", name);
-        properties.put("description", description);
+        properties.put(NAME, name);
+        properties.put(DESCRIPTION, description);
         
         Gson gson = new Gson();
         Logger.getLogger(LocalRuleExecutionSetProviderImpl.class.getName()).log(Level.INFO, "Ruleset: {0} code: {1}", new Object[]{name, code});
@@ -117,6 +149,13 @@ public class LocalRuleExecutionSetProviderImpl implements LocalRuleExecutionSetP
 
     }
 
+    /**
+     * Not implemented 
+     * @param ast ast 
+     * @param properties  properties
+     * @return RuleExecutionSet
+     * @throws RuleExecutionSetCreateException on fail
+     */
     @Override
     public RuleExecutionSet createRuleExecutionSet(Object ast, Map properties)
             throws RuleExecutionSetCreateException {

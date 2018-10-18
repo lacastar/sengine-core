@@ -13,7 +13,7 @@ import javax.rules.RuleServiceProviderManager;
 import javax.rules.admin.RuleAdministrator;
 
 /**
- *
+ * This class provides access to the RuleRuntime and RuleAdministrator implementation.
  * @author Szenthe László
  */
 public class RuleServiceProviderImpl extends RuleServiceProvider {
@@ -31,6 +31,11 @@ public class RuleServiceProviderImpl extends RuleServiceProvider {
         }
     }
 
+    /**
+     * Returns a class instance of RuleRuntime
+     * @return RuleRuntime instance
+     * @throws ConfigurationException Thrown if a configuration exception is encountered
+     */
     @Override
     public RuleRuntime getRuleRuntime()
             throws ConfigurationException {
@@ -43,6 +48,11 @@ public class RuleServiceProviderImpl extends RuleServiceProvider {
         }
     }
 
+    /**
+     * Returns a class instance of RuleAdministrator
+     * @return RuleAdministrator instance
+     * @throws ConfigurationException Thrown if a configuration exception is encountered
+     */
     @Override
     public RuleAdministrator getRuleAdministrator()
             throws ConfigurationException {

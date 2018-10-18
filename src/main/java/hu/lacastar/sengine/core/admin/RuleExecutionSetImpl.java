@@ -19,10 +19,11 @@ import javax.rules.admin.RuleExecutionSetCreateException;
 import javax.script.ScriptException;
 
 /**
+ * A Rule execution set implementation
  *
  * @author Szenthe László
  */
-public class RuleExecutionSetImpl extends HasProperties
+public class RuleExecutionSetImpl extends HashProperties
         implements RuleExecutionSet {
 
     private final Engine engine;
@@ -31,6 +32,16 @@ public class RuleExecutionSetImpl extends HasProperties
     private String uri;
     private String filter;
 
+    /**
+     *  Creates a rule execution set identified by it's name
+     *
+     * @param name Name of the execution set
+     * @param description Description of the execution set
+     * @param uri A URI used to register this execution set serving as a key for management purposes
+     * @param properties Properties of the execution set
+     * @param rules The rules to register in the execution set
+     * @throws RuleExecutionSetCreateException Thrown if a scripting exception occurs during registration
+     */
     public RuleExecutionSetImpl(String name, String description, String uri, Map<String, Object> properties, Rules rules) throws RuleExecutionSetCreateException {
         this.name = name;
         this.description = description;
@@ -46,16 +57,28 @@ public class RuleExecutionSetImpl extends HasProperties
         }
     }
 
+    /**
+     * Name accessor
+     * @return the name of the execution set
+     */
     @Override
     public String getName() {
         return this.name;
     }
 
+    /**
+     * Description accessor
+     * @return The description of the execution set
+     */
     @Override
     public String getDescription() {
         return this.description;
     }
 
+    /**
+     * URI accessor
+     * @return The URI of the execution set
+     */
     public String getUri() {
         return this.uri;
     }
@@ -64,16 +87,29 @@ public class RuleExecutionSetImpl extends HasProperties
         this.uri = uri;
     }
 
+    /**
+     * Default object filter
+     * @param objectFilterClassname the name of the class used for object filtering
+     */
     @Override
     public void setDefaultObjectFilter(String objectFilterClassname) {
         this.filter = objectFilterClassname;
     }
 
+    /**
+     * Return the default object filter class name
+     * @return the class name
+     */
     @Override
     public String getDefaultObjectFilter() {
         return this.filter;
     }
 
+    /**
+     * Resolve the object filter from its class name
+     * @return new instance of the object filter 
+     * @throws InvalidRuleSessionException Thrown if the class is not found, or any other exception is encountered during instantiation.
+     */
     public ObjectFilter resolveObjectFilter() throws InvalidRuleSessionException {
         if (this.filter == null) {
             return new ObjectFilterImpl();
@@ -87,8 +123,8 @@ public class RuleExecutionSetImpl extends HasProperties
     }
 
     /**
-     *
-     * @return
+     * Retrieves a list of rules
+     * @return The rules in this execution set
      */
     @Override
     public List getRules() {
@@ -97,7 +133,11 @@ public class RuleExecutionSetImpl extends HasProperties
         return al;
     }
 
-   public Engine getEngine() {
+    /**
+     * Return the engine
+     * @return The scripting engine hosting this execution set
+     */
+    public Engine getEngine() {
         return engine;
     }
     
