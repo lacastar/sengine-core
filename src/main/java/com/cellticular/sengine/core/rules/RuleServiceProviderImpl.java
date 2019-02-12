@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package hu.lacastar.sengine.core.rules;
+package com.cellticular.sengine.core.rules;
 
 import java.util.logging.Logger;
 import javax.rules.ConfigurationException;

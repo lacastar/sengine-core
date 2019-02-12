@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package hu.lacastar.sengine.core.admin;
+package com.cellticular.sengine.core.admin;
 
-import hu.lacastar.sengine.core.rules.engine.Engine;
-import hu.lacastar.sengine.core.rules.engine.Rules;
+import com.cellticular.sengine.core.rules.engine.Engine;
+import com.cellticular.sengine.core.rules.engine.Rules;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

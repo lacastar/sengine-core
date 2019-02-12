@@ -1,4 +1,4 @@
-package hu.lacastar.sengine.core.admin;
+package com.cellticular.sengine.core.admin;
 
 /**
  *

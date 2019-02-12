@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package hu.lacastar.sengine.core.rules;
+package com.cellticular.sengine.core.rules;
 
-import hu.lacastar.sengine.core.admin.RuleExecutionSetImpl;
+import com.cellticular.sengine.core.admin.RuleExecutionSetImpl;
 import javax.rules.RuleExecutionSetMetadata;
 
 /**

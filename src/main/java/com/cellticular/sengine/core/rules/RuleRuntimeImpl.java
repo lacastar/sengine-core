@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package hu.lacastar.sengine.core.rules;
+package com.cellticular.sengine.core.rules;
 
-import hu.lacastar.sengine.core.admin.RuleAdministratorImpl;
-import hu.lacastar.sengine.core.admin.RuleExecutionSetImpl;
+import com.cellticular.sengine.core.admin.RuleAdministratorImpl;
+import com.cellticular.sengine.core.admin.RuleExecutionSetImpl;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;

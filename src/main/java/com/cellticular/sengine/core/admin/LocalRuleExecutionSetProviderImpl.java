@@ -1,7 +1,7 @@
-package hu.lacastar.sengine.core.admin;
+package com.cellticular.sengine.core.admin;
 
 import com.google.gson.Gson;
-import hu.lacastar.sengine.core.rules.engine.Rules;
+import com.cellticular.sengine.core.rules.engine.Rules;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
