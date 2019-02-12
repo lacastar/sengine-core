@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package hu.lacastar.sengine.core;
+package com.cellticular.sengine.core;
 
 import com.google.gson.Gson;
-import hu.lacastar.sengine.core.admin.LocalRuleExecutionSetProviderImpl;
-import hu.lacastar.sengine.core.rules.engine.Engine;
-import hu.lacastar.sengine.core.rules.engine.Rules;
+import com.cellticular.sengine.core.admin.LocalRuleExecutionSetProviderImpl;
+import com.cellticular.sengine.core.rules.engine.Engine;
+import com.cellticular.sengine.core.rules.engine.Rules;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
